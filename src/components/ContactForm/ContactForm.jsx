@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { Form, Label, Input, Button } from '../Common.styled';
 import { Span } from './ContactForm.styled';
 import { useDispatch, useSelector } from 'react-redux';
-import { addContact, getContacts } from 'redux/contactsSlice';
+import { getContacts } from 'redux/contactsSlice';
+import { addContact } from 'redux/operations';
 
 const ContactForm = () => {
   const [name, setName] = useState('');
@@ -25,7 +26,7 @@ const ContactForm = () => {
 
   const handleSubmitForm = e => {
     e.preventDefault();
-    const contact = { name: name, number: number };
+    const contact = { name: name, phone: number };
 
     const isExist = contactsRedux.find(
       contactFind => contactFind.name.toLowerCase() === contact.name.toLowerCase(),
