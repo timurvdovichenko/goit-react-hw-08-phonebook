@@ -1,6 +1,5 @@
 import { Form, Label, Input } from './Common.styled';
 import { useDispatch, useSelector } from 'react-redux';
-import { useGetAllContactsQuery } from 'redux/contactsSlice';
 import { updateFilter } from 'redux/filterSlice';
 
 const Filter = () => {
