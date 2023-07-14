@@ -1,15 +1,15 @@
 import { useState } from 'react';
 import { Form, Label, Input, Button } from '../Common.styled';
 import { Span } from './ContactForm.styled';
-import { useDispatch, useSelector } from 'react-redux';
-import { getContacts } from 'redux/contactsSlice';
-import { addContact } from 'redux/operations';
+import { useAddContactMutation, useGetAllContactsQuery } from 'redux/contactsSlice';
 
 const ContactForm = () => {
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
-  const dispatch = useDispatch();
-  const contactsRedux = useSelector(getContacts);
+
+  const { data: contactsData } = useGetAllContactsQuery();
+  const [addContact, { isError: isErrorAddContact, error: errorAddContact }] =
+    useAddContactMutation();
 
   const handleChange = e => {
     const { name, value } = e.currentTarget;
@@ -28,7 +28,7 @@ const ContactForm = () => {
     e.preventDefault();
     const contact = { name: name, phone: number };
 
-    const isExist = contactsRedux.find(
+    const isExist = contactsData.find(
       contactFind => contactFind.name.toLowerCase() === contact.name.toLowerCase(),
     );
 
@@ -37,7 +37,10 @@ const ContactForm = () => {
       return;
     }
 
-    dispatch(addContact(contact));
+    if (isErrorAddContact) {
+      alert(`Something went wrong. The error code is "${errorAddContact.data}"`);
+    }
+    addContact(contact);
     resetForm();
   };
 

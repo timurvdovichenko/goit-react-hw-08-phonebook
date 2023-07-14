@@ -1,20 +1,17 @@
-import { getFilterValue } from 'redux/filterSlice';
 import { Button } from '../Common.styled';
 import { List, ListItem } from './ContactList.styled';
-import { useDispatch, useSelector } from 'react-redux';
-import { getContacts } from 'redux/contactsSlice';
-import { useEffect } from 'react';
-import { deleteContact, fetchContacts } from 'redux/operations';
+import { useGetAllContactsQuery, useDeleteContactMutation } from 'redux/contactsSlice';
+import Loader from 'components/Loader/Loader';
+import { useSelector } from 'react-redux';
+import { getFilterValue } from 'redux/selectors';
 
 const ContactList = () => {
-  const contactsRedux = useSelector(getContacts);
+  const { data: contactsRedux, error, isFetching, isError } = useGetAllContactsQuery();
+
+  const [deleteContact, { isError: isErrorDeleteContact, error: errorDeleteContact }] =
+    useDeleteContactMutation();
+
   const filterValue = useSelector(getFilterValue);
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(fetchContacts());
-  }, [dispatch]);
-
   const getFilteredContacts = () => {
     if (!contactsRedux) {
       return;
@@ -25,22 +22,34 @@ const ContactList = () => {
   };
 
   return (
-    <List>
-      {getFilteredContacts().map(({ name, id, phone }) => {
-        return (
-          <ListItem key={id}>
-            {name}: {phone}
-            <Button
-              type="button"
-              onClick={() => dispatch(deleteContact(id))}
-              buttonListStyle={'margin-left: 10px'}
-            >
-              Delete
-            </Button>
-          </ListItem>
-        );
-      })}
-    </List>
+    <>
+      {isFetching && <Loader />}
+      {getFilteredContacts() && (
+        <List>
+          {getFilteredContacts().map(({ name, id, phone }) => {
+            return (
+              <ListItem key={id}>
+                {name}: {phone}
+                <Button
+                  type="button"
+                  onClick={() => {
+                    deleteContact(id);
+                    // console.log(result);
+                  }}
+                  buttonListStyle={'margin-left: 10px'}
+                >
+                  Delete
+                </Button>
+              </ListItem>
+            );
+          })}
+        </List>
+      )}
+      {isError && <div>Something went wrong. The error code is {error.originalStatus}</div>}
+      {isErrorDeleteContact && (
+        <div>Something went wrong. The error code is "{errorDeleteContact.data}"</div>
+      )}
+    </>
   );
 };
 
