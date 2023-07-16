@@ -1,4 +1,4 @@
-import { Form, Label, Input } from './Common.styled';
+import { LabelStyled, InputStyled, FormStyled } from './Common.styled';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateFilter } from 'redux/filterSlice';
 
@@ -6,10 +6,10 @@ const Filter = () => {
   const valueRedux = useSelector(state => state.filter.value);
   const dispatch = useDispatch();
   return (
-    <Form filterForm={'border-style: none; margin-bottom: 0;'}>
-      <Label>
+    <FormStyled filterForm={'border-style: none; margin-bottom: 0;'}>
+      <LabelStyled>
         Find contacts by name
-        <Input
+        <InputStyled
           type="text"
           title="filter"
           value={valueRedux}
@@ -18,8 +18,8 @@ const Filter = () => {
           }}
           inputFilter={'margin: 0; margin-top: 10px;'}
         />
-      </Label>
-    </Form>
+      </LabelStyled>
+    </FormStyled>
   );
 };
 

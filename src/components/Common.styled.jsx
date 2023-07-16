@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-export const Form = styled.form`
+export const FormStyled = styled.form`
   display: block;
   margin: 30px;
   padding: 15px;
@@ -8,16 +8,16 @@ export const Form = styled.form`
   border: 2px solid black;
   ${props => props.filterForm}
 `;
-export const Label = styled.label`
+export const LabelStyled = styled.label`
   display: flex;
   flex-direction: column;
 `;
-export const Input = styled.input`
+export const InputStyled = styled.input`
   margin-bottom: 25px;
   width: 150px;
   ${props => props.inputFilter}
 `;
-export const Button = styled.button`
+export const ButtonStyled = styled.button`
   background: transparent;
   border-radius: 3px;
   border: 1px solid black;

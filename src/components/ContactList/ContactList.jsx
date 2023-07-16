@@ -1,17 +1,20 @@
-import { Button } from '../Common.styled';
+import { ButtonStyled } from '../Common.styled';
 import { List, ListItem } from './ContactList.styled';
-import { useGetAllContactsQuery, useDeleteContactMutation } from 'redux/contactsSlice';
-import Loader from 'components/Loader/Loader';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { useEffect } from 'react';
+import { getContacts } from 'redux/contacts/contactsSlice';
 import { getFilterValue } from 'redux/selectors';
+import { deleteContact, fetchContacts } from 'redux/contacts/contactsoperations';
 
 const ContactList = () => {
-  const { data: contactsRedux, error, isFetching, isError } = useGetAllContactsQuery();
-
-  const [deleteContact, { isError: isErrorDeleteContact, error: errorDeleteContact }] =
-    useDeleteContactMutation();
-
+  const contactsRedux = useSelector(getContacts);
   const filterValue = useSelector(getFilterValue);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchContacts());
+  }, [dispatch]);
+
   const getFilteredContacts = () => {
     if (!contactsRedux) {
       return;
@@ -22,34 +25,22 @@ const ContactList = () => {
   };
 
   return (
-    <>
-      {isFetching && <Loader />}
-      {getFilteredContacts() && (
-        <List>
-          {getFilteredContacts().map(({ name, id, phone }) => {
-            return (
-              <ListItem key={id}>
-                {name}: {phone}
-                <Button
-                  type="button"
-                  onClick={() => {
-                    deleteContact(id);
-                    // console.log(result);
-                  }}
-                  buttonListStyle={'margin-left: 10px'}
-                >
-                  Delete
-                </Button>
-              </ListItem>
-            );
-          })}
-        </List>
-      )}
-      {isError && <div>Something went wrong. The error code is {error.originalStatus}</div>}
-      {isErrorDeleteContact && (
-        <div>Something went wrong. The error code is "{errorDeleteContact.data}"</div>
-      )}
-    </>
+    <List>
+      {getFilteredContacts().map(({ name, id, number }) => {
+        return (
+          <ListItem key={id}>
+            {name}: {number}
+            <ButtonStyled
+              type="button"
+              onClick={() => dispatch(deleteContact(id))}
+              buttonListStyle={'margin-left: 10px'}
+            >
+              Delete
+            </ButtonStyled>
+          </ListItem>
+        );
+      })}
+    </List>
   );
 };
 

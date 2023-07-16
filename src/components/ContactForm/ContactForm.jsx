@@ -1,15 +1,16 @@
 import { useState } from 'react';
-import { Form, Label, Input, Button } from '../Common.styled';
+import { FormStyled, LabelStyled, InputStyled, ButtonStyled } from '../Common.styled';
 import { Span } from './ContactForm.styled';
-import { useAddContactMutation, useGetAllContactsQuery } from 'redux/contactsSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { addContact } from 'redux/contacts/contactsoperations';
+import { getContacts } from 'redux/contacts/contactsSlice';
+import { Notify } from 'notiflix';
 
 const ContactForm = () => {
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
-
-  const { data: contactsData } = useGetAllContactsQuery();
-  const [addContact, { isError: isErrorAddContact, error: errorAddContact }] =
-    useAddContactMutation();
+  const dispatch = useDispatch();
+  const contactsRedux = useSelector(getContacts);
 
   const handleChange = e => {
     const { name, value } = e.currentTarget;
@@ -26,21 +27,19 @@ const ContactForm = () => {
 
   const handleSubmitForm = e => {
     e.preventDefault();
-    const contact = { name: name, phone: number };
+    const contact = { name: name, number: number };
 
-    const isExist = contactsData.find(
+    const isExist = contactsRedux.find(
       contactFind => contactFind.name.toLowerCase() === contact.name.toLowerCase(),
     );
 
     if (isExist) {
-      alert(`${contact.name} is already in contacts.`);
+      // alert(`${contact.name} is already in contacts.`);
+      Notify.failure(`${contact.name} is already in contacts.`);
       return;
     }
 
-    if (isErrorAddContact) {
-      alert(`Something went wrong. The error code is "${errorAddContact.data}"`);
-    }
-    addContact(contact);
+    dispatch(addContact(contact));
     resetForm();
   };
 
@@ -50,10 +49,10 @@ const ContactForm = () => {
   };
 
   return (
-    <Form onSubmit={handleSubmitForm}>
-      <Label>
+    <FormStyled onSubmit={handleSubmitForm}>
+      <LabelStyled>
         <Span>Name</Span>
-        <Input
+        <InputStyled
           type="text"
           name="name"
           pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
@@ -62,10 +61,10 @@ const ContactForm = () => {
           value={name}
           onChange={handleChange}
         />
-      </Label>
-      <Label>
+      </LabelStyled>
+      <LabelStyled>
         <Span>Phone</Span>
-        <Input
+        <InputStyled
           type="tel"
           name="number"
           pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
@@ -74,9 +73,9 @@ const ContactForm = () => {
           value={number}
           onChange={handleChange}
         />
-      </Label>
-      <Button type="submit">Add contact</Button>
-    </Form>
+      </LabelStyled>
+      <ButtonStyled type="submit">Add contact</ButtonStyled>
+    </FormStyled>
   );
 };
 
